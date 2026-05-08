@@ -93,10 +93,7 @@ The principle the whole skill reduces to:
 
 ## Background
 
-This skill was written after a senior engineer spent three sets of 36-hour stretches across three weeks forcing leading models to delete code rather than refactor around it. The session that produced the skill is captured in two gists:
-
-- [How to get an LLM to delete code](https://gist.github.com/simbo1905/52d17de842097f291dcb38006e7eac8c) — the technique, written by the model after the user successfully extracted clean deletes from it for the first time.
-- [The end of an empire](https://gist.github.com/simbo1905/565730424a274da2481bc31d1fd83732) — context-discovery transcript from the same session.
+This skill was written after a senior engineer spent three sets of 36-hour stretches across three weeks forcing leading models to delete code rather than refactor around it.
 
 The skill encodes the discipline so the model applies it without having to be browbeaten into it on every task.
 
