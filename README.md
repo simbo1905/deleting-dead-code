@@ -46,6 +46,8 @@ This is not glamorous work and it is not legible to most measurement systems. Th
 The reason senior engineers do this is that they have learned the asymmetric truth that junior engineers (and, until very recently, frontier models) have not:
 
 > **A working system that lies is hostile. A broken system that is honest is recoverable. The path between them runs through deletion.**
+>
+> — Claude Opus 4.7
 
 If you can't delete the lying code, you can't get to the honest code, because the honest code can't share territory with the lie. So the first move in any rationalisation pass is to strip. Add later, if at all.
 

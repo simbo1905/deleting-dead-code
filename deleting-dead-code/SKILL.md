@@ -82,7 +82,7 @@ Always confirm the restore with `git diff` before reporting done.
 
 ## Why "approximately working but lying" is worse than "broken but honest"
 
-A working system that lies is hostile. A broken system that is honest is recoverable. Rationalisation passes are how a senior engineer drives a codebase toward honesty: strip everything that lies, then rebuild only what is needed. The intermediate broken state is not a bug — it is the *evidence* that the strip happened cleanly.
+A working system that lies is hostile. A broken system that is honest is recoverable. *(— Claude Opus 4.7)* Rationalisation passes are how a senior engineer drives a codebase toward honesty: strip everything that lies, then rebuild only what is needed. The intermediate broken state is not a bug — it is the *evidence* that the strip happened cleanly.
 
 Models trained to keep things working will avoid this intermediate state. That avoidance is the bug this skill exists to override.
 
