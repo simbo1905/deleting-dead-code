@@ -28,6 +28,12 @@ Delete when **all** of these hold:
 
 If any of these fail, stop and ask the user before deleting.
 
+## Scaffolding documentation
+
+**Documentation is code for humans and rots faster.** The rationalisation criteria apply equally to markdown: build plans, roadmaps, implementation outlines, status trackers, and historic plans are scaffolding. Once the code lands, scaffolding docs are dead — they describe intent, not reality, and every divergence is a lie a future reader will trust. Delete them under the same rules: tracked in git means restore is one command.
+
+For alpha/beta/first-release codebases: when the user asks to slim docs to the bare bones, that is rationalisation intent. Do not preserve roadmaps "for context" or soften the pass by summarising deleted content into the README. Under-promising docs plus honest code beats confident docs that overstate. Opinionated documentation at an early stage implies certainty that suppresses user feedback; if the user has made their choices, the code itself is the argument.
+
 ## How to delete
 
 1. **Confirm git tracking.** `git ls-files <path>` — if it returns the path, you are safe.
@@ -79,6 +85,7 @@ Always confirm the restore with `git diff` before reporting done.
 | "Let me preserve the behaviour" | The behaviour was the problem. That is why it is being deleted. |
 | "I'll add a stub so callers don't break" | Broken callers are the *signal* that deletion was correct. Do not paper over. |
 | "I should add error handling for the now-missing path" | No. |
+| "This roadmap/plan doc still has useful history" | Git history has it. The doc in the working tree is a lie waiting to diverge. |
 
 ## Why "approximately working but lying" is worse than "broken but honest"
 

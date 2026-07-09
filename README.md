@@ -88,6 +88,7 @@ Read [`deleting-dead-code/SKILL.md`](deleting-dead-code/SKILL.md) for the exact 
 - **Verification:** `git diff` read-back after every delete. Only `-` lines.
 - **Restore:** the explicit `git` invocations for staged-not-committed, committed, and partial cases.
 - **Red flags:** a table of internal model-thoughts that mean *stop, you are about to refactor instead of delete*.
+- Applies to documentation too: scaffolding docs (build plans, roadmaps, status trackers, historic plans) are dead code for humans — same rules, same git safety net, delete first.
 
 The principle the whole skill reduces to:
 
