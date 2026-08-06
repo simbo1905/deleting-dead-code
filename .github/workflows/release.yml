@@ -37,11 +37,24 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if gh release view "${{ steps.tag.outputs.release_tag }}" >/dev/null 2>&1; then
-            echo "Release ${{ steps.tag.outputs.release_tag }} already exists -- skipping."
+          TAG="${{ steps.tag.outputs.release_tag }}"
+          # 404 -> release absent (exists=false). Any other non-zero exit is a
+          # real API/auth/network failure: fail the job instead of silently
+          # proceeding as if the release didn't exist.
+          HTTP_CODE="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" \
+            -i -s -o /dev/null -w '%{http_code}' 2>/tmp/gh_err)" || {
+            echo "ERROR checking release existence (network/auth failure):" >&2
+            cat /tmp/gh_err >&2
+            exit 1
+          }
+          if [ "$HTTP_CODE" = "404" ]; then
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          elif [ "$HTTP_CODE" = "200" ]; then
+            echo "Release $TAG already exists -- skipping."
             echo "exists=true" >> "$GITHUB_OUTPUT"
           else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "ERROR: unexpected HTTP $HTTP_CODE checking release $TAG" >&2
+            exit 1
           fi
 
       - name: Install uv
@@ -61,8 +74,15 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag "${{ steps.tag.outputs.release_tag }}" "$GITHUB_SHA"
-          git push origin "${{ steps.tag.outputs.release_tag }}"
+          # Tolerate retries after a partial previous run: if the tag already
+          # exists (locally or on the remote) don't crash; the target is the
+          # same deterministic commit either way.
+          git tag -f "${{ steps.tag.outputs.release_tag }}" "$GITHUB_SHA"
+          if git ls-remote --exit-code --tags origin "refs/tags/${{ steps.tag.outputs.release_tag }}" >/dev/null 2>&1; then
+            echo "Tag ${{ steps.tag.outputs.release_tag }} already exists on remote -- skipping push."
+          else
+            git push origin "${{ steps.tag.outputs.release_tag }}"
+          fi
 
       - name: Create GitHub Release and upload artifacts
         if: steps.check_release.outputs.exists == 'false'
