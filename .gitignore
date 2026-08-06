@@ -1,0 +1,15 @@
+# Build outputs (dist/ contains packaging scripts, not artifacts)
+build-output/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# Environment (never commit actual secrets)
+.env
+
+# OS
+.DS_Store
+Thumbs.db
