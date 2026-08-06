@@ -19,8 +19,11 @@ tags:
   - rationalisation
   - documentation
 allowed-tools:
-  - git
-  - bash
+  - Bash
+  - Read
+  - Edit
+  - Grep
+  - Glob
 metadata:
   homepage: https://github.com/simbo1905/deleting-dead-code
   source: https://github.com/simbo1905/deleting-dead-code

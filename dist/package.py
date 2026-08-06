@@ -55,15 +55,19 @@ def build(tag: str, out_dir: Path, repo_root: Path) -> list[Path]:
     prefix = f"deleting-dead-code-{tag}"
 
     sources: list[Path] = []
+    missing: list[str] = []
     for name in INCLUDE_FILES:
         candidate = repo_root / name
         if not candidate.exists():
-            print(f"WARNING: {name} not found at {candidate}, skipping", file=sys.stderr)
+            missing.append(name)
             continue
         sources.append(candidate)
 
-    if not sources:
-        print("ERROR: No source files found", file=sys.stderr)
+    if missing:
+        print(
+            "ERROR: required source file(s) missing: " + ", ".join(missing),
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     zip_path = out_dir / f"{prefix}.zip"
