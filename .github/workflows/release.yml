@@ -38,22 +38,21 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="${{ steps.tag.outputs.release_tag }}"
-          # 404 -> release absent (exists=false). Any other non-zero exit is a
-          # real API/auth/network failure: fail the job instead of silently
-          # proceeding as if the release didn't exist.
-          HTTP_CODE="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" \
-            -i -s -o /dev/null -w '%{http_code}' 2>/tmp/gh_err)" || {
-            echo "ERROR checking release existence (network/auth failure):" >&2
-            cat /tmp/gh_err >&2
-            exit 1
-          }
-          if [ "$HTTP_CODE" = "404" ]; then
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-          elif [ "$HTTP_CODE" = "200" ]; then
+          # gh api returns:
+          #   exit 0 + the release JSON  -> release exists
+          #   exit 1 + "HTTP 404"        -> release absent
+          #   exit 1 + anything else     -> auth/network/5xx failure
+          # Distinguish all three instead of collapsing non-zero into
+          # "absent", so a flaky API call can't be misread as "release missing".
+          RESP="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" 2>&1)" && RC=0 || RC=$?
+          if [ "$RC" -eq 0 ]; then
             echo "Release $TAG already exists -- skipping."
             echo "exists=true" >> "$GITHUB_OUTPUT"
+          elif printf '%s' "$RESP" | grep -q "HTTP 404"; then
+            echo "exists=false" >> "$GITHUB_OUTPUT"
           else
-            echo "ERROR: unexpected HTTP $HTTP_CODE checking release $TAG" >&2
+            echo "ERROR checking release existence for $TAG:" >&2
+            printf '%s\n' "$RESP" >&2
             exit 1
           fi
 
