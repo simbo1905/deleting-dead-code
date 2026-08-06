@@ -8,7 +8,7 @@ Skip the manifesto, [jump to Install](#install) — or one-liner it:
 
 ```bash
 mkdir -p ~/.claude/skills/deleting-dead-code && \
-  curl -fsSL https://raw.githubusercontent.com/simbo1905/deleting-dead-code/main/deleting-dead-code/SKILL.md \
+  curl -fsSL https://raw.githubusercontent.com/simbo1905/deleting-dead-code/main/SKILL.md \
   -o ~/.claude/skills/deleting-dead-code/SKILL.md
 ```
 
@@ -80,7 +80,7 @@ That is the whole decision. No other case requires hesitation.
 
 ## What the skill encodes
 
-Read [`deleting-dead-code/SKILL.md`](deleting-dead-code/SKILL.md) for the exact instructions. The shape:
+Read [`SKILL.md`](SKILL.md) for the exact instructions. The shape:
 
 - **When to delete:** a four-condition check (tracked in git, rationalisation intent, provably bad in this codebase, no replacement bundled in the same step).
 - **How to delete:** atomic, one target per step, deletions only, no replacement logic, no collateral cleanup, no comments left in the corpse.
@@ -123,6 +123,51 @@ mkdir -p ~/.codex/skills
 git clone https://github.com/simbo1905/deleting-dead-code.git ~/.codex/skills/deleting-dead-code
 ```
 
+**Verdent:**
+
+```bash
+mkdir -p .verdent/skills/deleting-dead-code
+curl -fsSL https://raw.githubusercontent.com/simbo1905/deleting-dead-code/main/SKILL.md \
+  -o .verdent/skills/deleting-dead-code/SKILL.md
+```
+
+Or install from a versioned, checksum-verifiable release artifact:
+
+```bash
+TAG="2025.07.14-a1b2c3d"  # replace with the release tag you want
+curl -fsSL "https://github.com/simbo1905/deleting-dead-code/releases/download/${TAG}/deleting-dead-code-${TAG}.tar.gz" \
+  | tar -xz -C .verdent/skills/
+mv ".verdent/skills/deleting-dead-code-${TAG}" .verdent/skills/deleting-dead-code
+```
+
+> **Windows users:** the in-repo `.verdent/skills/deleting-dead-code/SKILL.md` is a symlink, which requires Developer Mode to check out correctly. Use the `curl`/release-artifact methods above instead of `git clone`.
+
+## Releases
+
+Releases are created automatically on every merge to `main`, tagged `YYYY.MM.DD-<shortsha>` (e.g. `2025.07.14-a1b2c3d`), and are immutable once published (the git tag can't move and the attached assets can't be modified or deleted). Each release includes:
+
+- `deleting-dead-code-<tag>.zip` — universal archive
+- `deleting-dead-code-<tag>.tar.gz` — Unix archive
+- `metadata.json` — SHA-256 provenance manifest for every source file and archive
+
+Build one yourself with the packaging script in [`dist/package.py`](dist/package.py) (requires [`uv`](https://docs.astral.sh/uv/)):
+
+```bash
+./dist/package.py --tag local-test --out-dir build-output
+```
+
+## Discoverability
+
+This skill is indexed automatically by [skillsmp.com](https://skillsmp.com) — it's a passive crawler of public GitHub repos containing `SKILL.md` files, so **no submission, account, or API key is required** for it to be listed there.
+
+Repo topics set for search/category discovery: `claude-skill`, `agent-skills`, `claude-code`, `codex`, `skill`, `dead-code`, `code-quality`, `verdent`.
+
+Manual, one-time community submissions (not automated by CI):
+
+- [ ] [`travisvn/awesome-claude-skills`](https://github.com/travisvn/awesome-claude-skills)
+- [ ] [`ComposioHQ/awesome-claude-skills`](https://github.com/ComposioHQ/awesome-claude-skills)
+- [ ] [`VoltAgent/awesome-agent-skills`](https://github.com/VoltAgent/awesome-agent-skills)
+
 ## Licence
 
-Public domain / CC0. Copy, fork, modify, send pull requests, ignore entirely.
+[CC0 1.0 Universal](LICENSE) — public domain. Copy, fork, modify, send pull requests, ignore entirely.

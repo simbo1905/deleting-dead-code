@@ -1,0 +1,77 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+# Prevent concurrent releases racing on the same ref
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute release tag
+        id: tag
+        run: |
+          # Derived from the commit timestamp (not wall-clock date) so the
+          # tag is deterministic and re-running on the same commit is a no-op.
+          TAG_DATE="$(git show -s --date=format:%Y.%m.%d --format=%cd "$GITHUB_SHA")"
+          SHORT_SHA="$(git rev-parse --short "$GITHUB_SHA")"
+          RELEASE_TAG="${TAG_DATE}-${SHORT_SHA}"
+          echo "release_tag=${RELEASE_TAG}" >> "$GITHUB_OUTPUT"
+          echo "Computed tag: ${RELEASE_TAG}"
+
+      - name: Check if release already exists
+        id: check_release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "${{ steps.tag.outputs.release_tag }}" >/dev/null 2>&1; then
+            echo "Release ${{ steps.tag.outputs.release_tag }} already exists -- skipping."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install uv
+        if: steps.check_release.outputs.exists == 'false'
+        uses: astral-sh/setup-uv@v6
+
+      - name: Run packaging script
+        if: steps.check_release.outputs.exists == 'false'
+        run: |
+          chmod +x dist/package.py
+          ./dist/package.py \
+            --tag "${{ steps.tag.outputs.release_tag }}" \
+            --out-dir build-output
+
+      - name: Create and push Git tag
+        if: steps.check_release.outputs.exists == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "${{ steps.tag.outputs.release_tag }}" "$GITHUB_SHA"
+          git push origin "${{ steps.tag.outputs.release_tag }}"
+
+      - name: Create GitHub Release and upload artifacts
+        if: steps.check_release.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.tag.outputs.release_tag }}" \
+            --title "Release ${{ steps.tag.outputs.release_tag }}" \
+            --generate-notes \
+            "build-output/deleting-dead-code-${{ steps.tag.outputs.release_tag }}.zip" \
+            "build-output/deleting-dead-code-${{ steps.tag.outputs.release_tag }}.tar.gz" \
+            "build-output/metadata.json"

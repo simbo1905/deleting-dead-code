@@ -1,6 +1,37 @@
 ---
 name: deleting-dead-code
-description: Use when the user asks to remove, delete, strip, or clean up code, OR when you yourself observe dead, unreachable, slop, misleading, or unused code paths during any task. Senior engineers delete; junior engineers refactor around. This skill makes the model behave like the former. Git is the safety net — if a file is tracked, deletion is trivially reversible, so deletion is the correct first move, not the last resort.
+description: >-
+  Use when the user asks to remove, delete, strip, or clean up code or docs,
+  OR when you yourself observe dead, unreachable, slop, misleading, or unused
+  code/documentation paths during any task. Senior engineers delete; junior
+  engineers refactor around. This skill makes the model behave like the
+  former. Git is the safety net — if a file is tracked, deletion is trivially
+  reversible, so deletion is the correct first move, not the last resort.
+license: CC0-1.0
+version: "1.0.0"
+author: simbo1905
+tags:
+  - code-quality
+  - refactoring
+  - deletion
+  - dead-code
+  - git
+  - rationalisation
+  - documentation
+allowed-tools:
+  - git
+  - bash
+metadata:
+  homepage: https://github.com/simbo1905/deleting-dead-code
+  source: https://github.com/simbo1905/deleting-dead-code
+  compatibility:
+    - claude-code
+    - claude-api
+    - codex-cli
+    - cursor
+    - gemini-cli
+    - windsurf
+    - verdent
 ---
 
 # Deleting Dead Code
